@@ -1,0 +1,3 @@
+[submodule "nrpytutorial"]
+	path = nrpytutorial
+	url = https://github.com/zachetienne/nrpytutorial.git
