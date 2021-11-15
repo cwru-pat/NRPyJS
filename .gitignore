@@ -127,3 +127,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# NRPY output that isn't useful
+EMCC_BSSN_Two_BHs_Collide/*
+
+
