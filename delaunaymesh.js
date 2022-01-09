@@ -79,7 +79,7 @@ const coordAxes = new THREE.AxesHelper( 5 );
 const red = new THREE.Color("#ff0000");
 const blue = new THREE.Color("#0000FF" );
 const purple = new THREE.Color("#800080");
-coordAxes.setColors(red, blue, purple); 
+coordAxes.setColors(red, blue, purple);
 
 scene.add(coordAxes);
 scene.add(mesh1);
@@ -129,3 +129,21 @@ function renderCanvas(element)
   element.appendChild(canvas);
   render();
 }
+
+// Psi4 Grid
+const size = 10;
+const divisions = 100;
+const gridHelper = new THREE.GridHelper(size,divisions);
+
+function renderPsi4(){
+    scene.remove(mesh1);
+    scene.remove(mesh2);
+    scene.add(gridHelper);
+}
+
+function revert(){
+    scene.remove(gridHelper);
+    scene.add(mesh1);
+    scene.add(mesh2);
+}
+
