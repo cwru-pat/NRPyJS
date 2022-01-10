@@ -15,9 +15,9 @@ function changeUp(){
         fx = document.getElementById("selectFx").value;
 
         if(fx==24 || fx==25 || fx==26){
-        updateMesh(zdata[fx][0], psi4XData[0], psi4YData[0]);
+            updateMesh(zdata[fx][0], psi4XData[0], psi4YData[0]);
         } else {
-        updateMesh(zdata[fx][0], xdata[0], ydata[0]);
+            updateMesh(zdata[fx][0], xdata[0], ydata[0]);
         }
     }
 };
