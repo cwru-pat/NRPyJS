@@ -131,4 +131,6 @@ dmypy.json
 # NRPY output that isn't useful
 EMCC_BSSN_Two_BHs_Collide/*
 EMCC_BSSN_Two_BHs_Collide_Psi4/*
-
+Scalar_Collapse_WebMaterials/*
+Scalar_Collapse_WebMaterials2/*
+BSSN_Scalar_Collapse/*
