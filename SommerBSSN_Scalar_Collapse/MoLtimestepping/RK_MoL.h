@@ -9,7 +9,7 @@ LOOP_ALL_GFS_GPS(i) {
 }
 
 //apply_bcs_curvilinear(&params, &bcstruct, NUM_EVOL_GFS, evol_gf_parity, k_odd_gfs);
-apply_bcs_sommerfeld(&params, &xx[3], &bcstruct, NUM_EVOL_GFS, evol_gf_parity, k_odd_gfs, &rhs_gfs); 
+apply_bcs_sommerfeld(&params, &xx[3], &bcstruct, NUM_EVOL_GFS, evol_gf_parity, y_n_gfs, k_odd_gfs); 
 enforce_detgammahat_constraint(&rfmstruct, &params,                     k_odd_gfs);
 
 
@@ -23,7 +23,7 @@ LOOP_ALL_GFS_GPS(i) {
 }
 
 //apply_bcs_curvilinear(&params, &bcstruct, NUM_EVOL_GFS, evol_gf_parity, k_even_gfs);
-apply_bcs_sommerfeld(&params, &xx[3], &bcstruct, NUM_EVOL_GFS, evol_gf_parity, k_even_gfs, &rhs_gfs); 
+apply_bcs_sommerfeld(&params, &xx[3], &bcstruct, NUM_EVOL_GFS, evol_gf_parity, k_odd_gfs, k_even_gfs); 
 enforce_detgammahat_constraint(&rfmstruct, &params,                     k_even_gfs);
 
 
@@ -37,7 +37,7 @@ LOOP_ALL_GFS_GPS(i) {
 }
 
 //apply_bcs_curvilinear(&params, &bcstruct, NUM_EVOL_GFS, evol_gf_parity, k_odd_gfs);
-apply_bcs_sommerfeld(&params, &xx[3], &bcstruct, NUM_EVOL_GFS, evol_gf_parity, k_odd_gfs, &rhs_gfs); 
+apply_bcs_sommerfeld(&params, &xx[3], &bcstruct, NUM_EVOL_GFS, evol_gf_parity, k_even_gfs, k_odd_gfs); 
 enforce_detgammahat_constraint(&rfmstruct, &params,                     k_odd_gfs);
 
 
@@ -50,7 +50,7 @@ LOOP_ALL_GFS_GPS(i) {
 }
 
 //apply_bcs_curvilinear(&params, &bcstruct, NUM_EVOL_GFS, evol_gf_parity, y_n_gfs);
-apply_bcs_sommerfeld(&params, &xx[3], &bcstruct, NUM_EVOL_GFS, evol_gf_parity, y_n_gfs, &rhs_gfs); 
+apply_bcs_sommerfeld(&params, &xx[3], &bcstruct, NUM_EVOL_GFS, evol_gf_parity, k_odd_gfs, k_even_gfs); 
 enforce_detgammahat_constraint(&rfmstruct, &params,                     y_n_gfs);
 
 

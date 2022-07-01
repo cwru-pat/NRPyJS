@@ -159,11 +159,11 @@ void initial_data(const paramstruct *restrict params,const bc_struct *restrict b
     ID_scalarfield(params,xx,SF_in, in_gfs);
     ID_BSSN__ALL_BUT_LAMBDAs(params,xx,SF_in, in_gfs);
     //apply_bcs_curvilinear(params, bcstruct, NUM_EVOL_GFS, evol_gf_parity, in_gfs);
-    apply_bcs_sommerfeld(params, xx[3], bcstruct, NUM_EVOL_GFS, evol_gf_parity, in_gfs, rhs_gfs); 
+    apply_bcs_sommerfeld(params, xx[3], bcstruct, NUM_EVOL_GFS, evol_gf_parity, auxevol_gfs, in_gfs); 
     enforce_detgammahat_constraint(rfmstruct, params,                   in_gfs);
     ID_BSSN_lambdas(params, xx, in_gfs);
     //apply_bcs_curvilinear(params, bcstruct, NUM_EVOL_GFS, evol_gf_parity, in_gfs);
-    apply_bcs_sommerfeld(params, xx[3], bcstruct, NUM_EVOL_GFS, evol_gf_parity, in_gfs, rhs_gfs); 
+    apply_bcs_sommerfeld(params, xx[3], bcstruct, NUM_EVOL_GFS, evol_gf_parity, auxevol_gfs, in_gfs); 
     enforce_detgammahat_constraint(rfmstruct, params,                   in_gfs);
 
     free(r_arr);
@@ -308,7 +308,7 @@ int EMSCRIPTEN_KEEPALIVE initialize(REAL CFL_FACTOR){
     //          E.g., spherical initial data might not be
     //          properly defined at points where r=-1.
     //apply_bcs_curvilinear(&params, &bcstruct, NUM_EVOL_GFS,evol_gf_parity, y_n_gfs);
-    apply_bcs_sommerfeld(&params, &xx[3], &bcstruct, NUM_EVOL_GFS, evol_gf_parity, y_n_gfs, &rhs_gfs); 
+    apply_bcs_sommerfeld(&params, &xx[3], &bcstruct, NUM_EVOL_GFS, evol_gf_parity, auxevol_gfs, y_n_gfs); 
     enforce_detgammahat_constraint(&rfmstruct, &params, y_n_gfs);
 
     //Step 2: Assign pointers/Initialize global variables
