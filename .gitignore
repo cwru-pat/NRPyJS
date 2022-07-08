@@ -6,6 +6,13 @@ __pycache__/
 # C extensions
 *.so
 
+# Outputs from NRPy+ / NRPyElliptic
+SommerBSSN_Scalar_Collapse/
+SommerfeldBSSN_Scalar_Collapse/
+
+# Website Directories
+Testing
+
 # Distribution / packaging
 .Python
 build/
