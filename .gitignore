@@ -6,10 +6,6 @@ __pycache__/
 # C extensions
 *.so
 
-# Outputs from NRPy+ / NRPyElliptic
-SommerBSSN_Scalar_Collapse/
-SommerfeldBSSN_Scalar_Collapse/
-
 # Website Directories
 Testing
 
@@ -138,6 +134,9 @@ dmypy.json
 # NRPY output that isn't useful
 EMCC_BSSN_Two_BHs_Collide/*
 EMCC_BSSN_Two_BHs_Collide_Psi4/*
-Scalar_Collapse_WebMaterials/*
-Scalar_Collapse_WebMaterials2/*
 BSSN_Scalar_Collapse/*
+SommerBSSN_Scalar_Collapse/*
+Ellipse/*
+Elliptic/*
+Scalar_Collapse/*
+Testing/*
