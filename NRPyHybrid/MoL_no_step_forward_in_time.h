@@ -26,12 +26,13 @@
     //const int Nxx_plus_2NGHOSTS2 = griddata->params.Nxx_plus_2NGHOSTS2;
 //REAL test = 4;
 Ricci_eval(&rfmstruct, &params, y_n_gfs, auxevol_gfs);
-rhs_eval(&rfmstruct, &params, auxevol_gfs, y_n_gfs, k_odd_gfs);apply_bcs_sommerfeld(&params, xx, &bcstruct, NUM_EVOL_GFS, evol_gf_parity, y_n_gfs, k_odd_gfs);
+rhs_eval(&rfmstruct, &params, auxevol_gfs, y_n_gfs, k_odd_gfs);
+apply_bcs_sommerfeld(&params, xx, &bcstruct, NUM_EVOL_GFS, evol_gf_parity, y_n_gfs, k_odd_gfs);
     LOOP_ALL_GFS_GPS(i) {
       const REAL k_odd_gfsL = k_odd_gfs[i];
       const REAL y_n_gfsL = y_n_gfs[i];
-      y_nplus1_running_total_gfs[i] = (1.0/6.0)*dt*k_odd_gfsL;
-      k_odd_gfs[i] = (1.0/2.0)*dt*k_odd_gfsL + y_n_gfsL;
+      y_nplus1_running_total_gfs[i] = (1.0/6.0)*dtt*k_odd_gfsL;
+      k_odd_gfs[i] = (1.0/2.0)*dtt*k_odd_gfsL + y_n_gfsL;
     }
 
         enforce_detgammahat_constraint(&rfmstruct, &params,                     k_odd_gfs);
@@ -62,8 +63,8 @@ rhs_eval(&rfmstruct, &params, auxevol_gfs, y_n_gfs, k_odd_gfs);apply_bcs_sommerf
       const REAL k_even_gfsL = k_even_gfs[i];
       const REAL y_nplus1_running_total_gfsL = y_nplus1_running_total_gfs[i];
       const REAL y_n_gfsL = y_n_gfs[i];
-      y_nplus1_running_total_gfs[i] = (1.0/3.0)*dt*k_even_gfsL + y_nplus1_running_total_gfsL;
-      k_even_gfs[i] = (1.0/2.0)*dt*k_even_gfsL + y_n_gfsL;
+      y_nplus1_running_total_gfs[i] = (1.0/3.0)*dtt*k_even_gfsL + y_nplus1_running_total_gfsL;
+      k_even_gfs[i] = (1.0/2.0)*dtt*k_even_gfsL + y_n_gfsL;
     }
 
         enforce_detgammahat_constraint(&rfmstruct, &params,                     k_even_gfs);
@@ -94,8 +95,8 @@ rhs_eval(&rfmstruct, &params, auxevol_gfs, y_n_gfs, k_odd_gfs);apply_bcs_sommerf
       const REAL k_odd_gfsL = k_odd_gfs[i];
       const REAL y_nplus1_running_total_gfsL = y_nplus1_running_total_gfs[i];
       const REAL y_n_gfsL = y_n_gfs[i];
-      y_nplus1_running_total_gfs[i] = (1.0/3.0)*dt*k_odd_gfsL + y_nplus1_running_total_gfsL;
-      k_odd_gfs[i] = dt*k_odd_gfsL + y_n_gfsL;
+      y_nplus1_running_total_gfs[i] = (1.0/3.0)*dtt*k_odd_gfsL + y_nplus1_running_total_gfsL;
+      k_odd_gfs[i] = dtt*k_odd_gfsL + y_n_gfsL;
     }
 
         enforce_detgammahat_constraint(&rfmstruct, &params,                     k_odd_gfs);
@@ -126,7 +127,7 @@ rhs_eval(&rfmstruct, &params, auxevol_gfs, y_n_gfs, k_odd_gfs);apply_bcs_sommerf
       const REAL k_even_gfsL = k_even_gfs[i];
       const REAL y_n_gfsL = y_n_gfs[i];
       const REAL y_nplus1_running_total_gfsL = y_nplus1_running_total_gfs[i];
-      y_n_gfs[i] = (1.0/6.0)*dt*k_even_gfsL + y_n_gfsL + y_nplus1_running_total_gfsL;
+      y_n_gfs[i] = (1.0/6.0)*dtt*k_even_gfsL + y_n_gfsL + y_nplus1_running_total_gfsL;
     }
 
         enforce_detgammahat_constraint(&rfmstruct, &params,                     y_n_gfs);
