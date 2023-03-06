@@ -15,7 +15,7 @@
     <body>
         <!--graphing tools-->
         <script src="https://threejs.org/build/three.min.js"></script>
-        <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+        <script src="../OrbitControls.js"></script>
         <script src="https://unpkg.com/delaunator@3.0.2/delaunator.js"></script> 
         <!-- https://github.com/mapbox/delaunator -->
         
@@ -29,9 +29,9 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/js/standalone/selectize.js"></script>
         
         <!--link to Javascript codes-->
-        <script src="BHCollideSim.js"></script>
+        <script src="BHCollidePsi4.js"></script>
         <script src="delaunaymesh.js"></script> 
-        <script src="BHCollidePlot.js"></script>
+        <script src="BHCollidePlotPsi4.js"></script>
         
         <!-- simulation control panel start -->
         <div id="controlPanel">
@@ -65,6 +65,7 @@
                     <option value="21">V&#185;: Shift Variable</option> <!--VETU0GF-->
                     <option value="22">V&#178;: Shift Variable</option> <!--VETU1GF-->
                     <option value="23">V&#179;: Shift Variable</option> <!--VETU2GF-->
+                    <option value="26">Ψ&#8324;: 4th Weyl scalar</option>
                 </select>
                 <button id="nextButton" class="buttons" onclick="javascript:nextSlice();" disabled>Step Forward</button>
                 <button id="animateButton" class="buttons" onclick="javascript:animateSim();" disabled>Animate</button>
@@ -75,8 +76,8 @@
                 <!--drop-down advanced control panel start-->
                 <div id="advancedControls">
                     <label for="res1" id="res">Resolution</label>
-                    <input type="text" id="res1" name="res1" maxlength="2" size="4" value="72">
-                    <input type="text" id="res2" maxlength="2" size="4" value="12">
+                    <input type="text" id="res1" name="res1" maxlength="2" size="4" value="28">
+                    <input type="text" id="res2" maxlength="2" size="4" value="8">
                     <input type="text" id="res3" maxlength="1" size="4" value="2" hidden>
                     <label for="axesOnOff">Axes</label>
                     <input type="checkbox" id="axesOnOff" onchange="axesVisibility();" checked>
@@ -96,7 +97,15 @@
         <div id="luneLogo">
             i <!-- UTF-8 info character 🛈, not working on mobile? -->
         </div>
-        <!-- info button end --> 
+        <!-- info button end -->
+        
+        
+        <!-- home button start -->
+        <div id="homeButton">
+            <i class="fa fa-home"></i>
+        </div>
+        <!-- home button end -->
+        
 
         <!--pop-up info page start-->
         <div id="myModal" class="modal">
@@ -105,53 +114,34 @@
                 
                 <h1>Welcome to the Colliding Black Hole Simulator!</h1>
 
-                <p>This website simulates two black holes colliding and visualizes components of the spacetime metric with the click of a button. Usually, these types of simulations are run on supercomputers, but the researchers behind BlackHoles@Home have found a way to dramatically reduce the memory and computing requirements. Using a modified version of their NRPY+ code&#8212;a python-based code generation software package&#8212;and Emscripten&#8212;a C/C++ compiler to WebAssembly&#8212;we were able to run a binary black hole collision in a browser!</p>
-                
-                <h2>Motivation</h2>
-                <p>This visualization was inspired by the BlackHoles@Home project and their work making binary black hole simulations that can run on consumer-grade desktops. We wanted to take this one step further, and make these simulations even more accessible by creating a browser-based simulator that would be intuitive to the general public. That way, anyone, regardless of skill level, would be able to access these simulations. Now, instead of a supercomputer, all you need need is a link! Anyone desiring a more advanced look into how the simulation runs can check out the NRPY+ tutorial and Emscripten at the bottom of the info page.</p>
+                <p>This website simulates the collision of a binary black hole system using numerical relativity algorithms. It was the first simulation in a larger project in collaboration with NRPy+ and BlackHoles@Home to bring numerical relativity simulations to the internet.</p>
                 
                 <h2>What am I Simulating?</h2>
-                <p>Black holes are simulated by solving Einstein's field equations for general relativity and integrating those equations over time. Einstein's equations describe the geometry of a 4D spacetime. There are many different functions within those equations we can graph. To visualize the collision in 3D, we take two spatial dimensions \((x,y)\) and let a surface height \(z\) be one of the many functions our program records during the simulation. Each static image is called a "spatial slice" and represents what a function looks like at any particular point along a 2D field at one moment in time. These spatial slices are all stacked on top of one another to compose our 3D world, and each changes as time goes on. Changes in these functions can tell us a lot about how our chosen spacetime changes in a collision. See <a href="#functions">The Lapse Function, Conformal Factor and More</a> for a description of some of these functions.
-                <br><br>The NRPY+ code simulates two colliding black holes by taking initial data for a black hole system with two black holes at rest and integrating it forward in time using the Method of Lines and RK4 time-stepping algorithm (see <a href="#MoLRK4">Method of Lines and Runge-Kutta 4th-Order Method</a>). These calculations are done using a version of the BSSN 3+1 formalism, which is just a different way of writing Einstein's field equations (see <a href="#EFE">Einstein's Field Equations in BSSN</a>). The simulation records the evolution of 24 different functions solved for within the BSSN equations. For each function the program will display a 2D spatial slice and show its progression over a set number of time-steps.</p>
+                <p>Black holes are simulated by solving Einstein's field equations for general relativity and integrating those equations over time. Einstein's equations describe the geometry of a 4D spacetime. There are many different functions within those equations we can graph. To visualize the collision in 3D, we take two spatial dimensions \((x,y)\) and let a surface height \(z\) be one of the many functions our program records during the simulation. Each static image is called a "spatial slice" and represents what a function looks like at any particular point along a 2D field at one moment in time. These spatial slices are all stacked on top of one another to compose our 3D world, and each changes as time goes on. Changes in these functions can tell us a lot about how our chosen spacetime changes in a collision.
+                <br><br>The NRPY+ code simulates two colliding black holes by taking initial data for a black hole system with two black holes at rest and integrating it forward in time using the Method of Lines and RK4 time-stepping algorithm. These calculations are done using a version of the BSSN 3+1 formalism of Einstein's field equations (see <a href=https://lune.wustl.edu/kbh#NRBackground>Background Information on Numerical Relativity</a> for a more indepth explaination). The simulation records the evolution of 25 different functions solved for within the BSSN equations. For each function, the program displays a 2D spatial slice and shows its evolution over a set number of time-steps.</p>
 
                 <h3>Running the Simulator</h3>
-                <p>When you first open the page click "Run Simulation" to run the simulation. At the default resolution the simulation will take around half a minute to complete. You can view its progress in the progress bar. After the program has run once you will be able to graph all 24 different functions! Select a function to visualize it via the drop-down menu, and then click "Step Forward" to move forward one time-step, or "Animate" to see the whole simulation start to finish. Click the arrow for advanced controls. Note that changing the resolution will impact the simulation time.</p>
+                <p>When you first open the page click "Run Simulation" to run the simulation. At the default resolution the simulation will take around half a minute to complete. You can view its progress in the progress bar. After the program has run once you will be able to graph all 25 different functions! Select a function to visualize it via the drop-down menu, and then click "Step Forward" to move forward one time-step, or "Animate" to see the whole simulation start to finish. Click the arrow for advanced controls to remove the axis or change the resolution. Changing the resolution will effect how many points are sampled in two spatial dimensions (theta and r). Once a new resolution has been set, click "Run Simulation" to see how the simulation is effecte (note that changing the resolution will impact the time it takes for the simulation to complete). To return to the home page, click the house icon in the lower right hand corner of the screen.</p>
                 
-                <h2 id="functions">The Lapse Function, Conformal Factor and More</h2>
+                 <h2 id="functions">The 4th Weyl scalar, Lapse Function, Conformal Factor and More</h2>
                 <p>The simulation records the evolution of 24 different functions within the BSSN equations. Here we will highlight a few of the typical BSSN functions. Note that this description follows Einstein notation, so spatial dimensions are denoted using an index \(i\), which can be any of three general coordinates: \(r, \theta, \phi\).
-                <br><br>NOTE: The simulation used a rescaled version of the BSSN equations to avoid issues with coordinate singularities that cause problems in calculations. These functions are closely related to the standard BSSN ones. For brevity's sake, on this page we will only discuss the typical BSSN functions. If you are interested in learning more about the specific functions used in the simulation see the <a href="http://astro.phys.wvu.edu/bhathome/nrpytutorial.html">NRPY+ Tutorial</a> section on BSSN in Curvilinear Coordinates.</p>
-                
-                <h3>Shift Function: \(\beta^i\)</h3>
-                <p>In the theory of general relativity mass warps spacetime. Therefore, moving mass around will change the geometry of spacetime. This means coordinate points near some mass can be shifted in some way compared to the same points if there were no mass nearby. When the black holes collide, the coordinates near those moving masses will shift around depending on how the mass is moving nearby. The shift function describes how a point's position will change in each spatial dimension at each point in time. In this simulation, the variable \(B^i \sim beta^i\).
-                <br><br>You may notice that \(\beta^\phi\) does not change throughout the simulation. This is because the system is symmetric in the \(\phi\) direction. \(\beta^\phi\) depends on this dimension, so when graphed over the 2D slice it's 0 at all points and times.</p> 
-            
+                <br><br>NOTE: The simulation used a rescaled version of the BSSN equations to avoid issues with coordinate singularities that cause problems in calculations. These functions are closely related to the standard BSSN ones. For brevity's sake, on this page we will only discuss the typical BSSN functions. If you are interested in learning more about the specific functions used in the simulation see the <a href="https://blackholesathome.net/nrpytutorial.html">Interactive NRPY+ Tutorial</a> section on BSSN in Curvilinear Coordinates.</p>
+    
                 <h3>Lapse Function: \(\alpha\)</h3>
                 <p>The lapse function describes how fast time is passing at each point. At each point on a spatial slice, time may be progressing slower or faster (think Interstellar where time on Miller's planet runs slower than on the space shuttle). In general relativity, time is just another dimension. Therefore, just like how spatial coordinates can be shifted, moving mass around will change how fast time is flowing between time slices. As the black holes move, a point's proper time (time measured at that point) will become "slower" or "faster" as it gets closer to or farther from the black holes.</p>
-            
+
+                <h3>Shift Function: \(\beta^i\)</h3>
+                <p>In the theory of general relativity mass warps spacetime. Therefore, moving mass around will change the geometry of spacetime. This means coordinate points near some mass can be shifted in some way compared to the same points if there were no mass nearby. When the black holes collide, the coordinates near those moving masses will shift around depending on how the mass is moving nearby. The shift function describes how a point's position will change in each spatial dimension at each point in time. In this simulation, the variable \(B^i \sim \beta^i\).
+                <br><br>You may notice that \(\beta^\phi\) does not change throughout the simulation. This is because the system is symmetric in the \(\phi\) direction. \(\beta^\phi\) depends on this dimension, so when graphed over the 2D slice it's 0 at all points and times.</p>
+
                 <h3>Conformal Factor: \(e^{-2\phi}\)</h3>
-                <p>The conformal factor is something unique to the BSSN formulation of Einstein's equations. It describes how much the spacetime has expanded or contracted. Numerically, and more technically, it relates a conformally transformed spatial metric to the regular spatial metric (see <a href="#EFE">Einstein's Field Equations in BSSN</a>). In the BSSN formulation, different definitions of conformal factors can be used; in this simulation, \(e^{-2\phi}\) was used.</p>
+                <p>The conformal factor is something unique to the BSSN formulation of Einstein's equations. It describes how much the spacetime has expanded or contracted. Numerically, and more technically, it relates a conformally transformed spatial metric to the regular spatial metric. In the BSSN formulation, different definitions of conformal factors can be used; in this simulation, \(e^{-2\phi}\) was used.</p>
 
                 <h3>Trace of Extrinsic Curvature: \(K\)</h3>
                 <p>The extrinsic curvature (\(K_{ij}\)) describes how quickly a region of spacetime is expanding or contracting, and its trace (\(K\)) is the sum of those rates in all dimensions. More formally, it describes how a vector normal to a time-slice deviates from normal when moved along parallel lines on a time slice (parallel transportation). If the vector shifts at all from normal, there exists some extrinsic curvature, and the trace is the total change in the normal vector at each point on a spatial slice. The functions \(a_{11}\), \(a_{12}\), etc. are all part of the tensor \(a_{ij}\) which is roughly equal to the function you get when you remove the trace from the extrinsic curvature tensor.</p>
 
-                <h2 id="EFE">Einstein's Field Equations in BSSN and BSSN in Curvilinear</h2>
-                <p>Einstein's field equations describe how mass, specifically the distribution of mass, affects the geometry of a 4D spacetime (3 spatial dimensions, one time dimension). In this theory, gravity can be thought of as a dip in spacetime which acts like the side of a bowl, pulling objects towards the center. These equations can be written in many different ways that cater to specific general relativistic systems. The ADM 3+1 formalism splits 4D spacetime vectors into a 3D spatial vector and 1D time component, and reformulates Einstein's equations accordingly. The BSSN formalism is a further reformulation of the standard ADM 3+1 equations that aims to improve the performance of numerical implementations, such as when studying the evolution of binary black hole systems.
-                    
-                <br><br>One notable aspect of the BSSN equations is that the spatial metric is decomposed into a conformally related spatial metric and an additional conformal factor. Additionally, the extrinsic curvature is broken into its trace and a traceless parts. Conformal decomposition and breaking a metric into its trace and traceless parts are mathematical techniques that make equations easier to use (or in this case evolve) in certain settings. Along with a few other modifications, these techniques allow the BSSN formalism to compute time evolution simulations for far longer than the standard ADM equations would allow.</p>
-
-                <h2>Method of Lines and Runge-Kutta 4th-Order Method</h2>
-                <p>Einstein's equations are non-linear partial differential equations, which are very difficult to handle. In order to run the simulation, we need to simplify the equations so that when we plug in our initial data, we get expressions for the functions we want to visualize. This process of simplification is referred to as "solving" Einstein's equations. To solve the BSSN equations we use Method of Lines which is a general strategy to solve time-dependent partial differential equations by breaking them down into a set of ordinary differential equations (ODEs). Ordinary differential equations are much easier to handle, and there are many methods of solving them. Once the method of lines procedure runs, this simulation uses the Runge-Kutta 4th-order (RK4) method to solve the ODEs, which can accurately integrate the functions over time while remaining numerically stable. This process is part of the core loop in the code. Each time we want to progress the simulation forward in time, we run the Method of Lines RK4 algorithm to get the next spatial slice.</p>
-                
-                <h2>Contact Info</h2>
-                <p>Got any questions or interested in learning more? Email us at </p>
-                <p>For more information on NRPY+ and 
-                    <a href="http://astro.phys.wvu.edu/bhathome/" target="_blank">
-                        BlackHoles@Home 
-                    <img id="BHlogo" src="BH@Hlogo.png" alt=""></a></p>
-                <p>For more information on 
-                    <a href="https://emscripten.org/index.html" target="_blank">
-                        Emscripten
-                    <img id="emscriptenlogo" src="EmscriptenLogo.png" alt=""></a></p>
+                <h3>4th Weyl scalar: \(\Psi_4\)</h3>
+                <p>The Weyl scalar (\(\Psi_4\)) provides a measure of the amount of gravitational radiation, or strength of gravitational waves, emitted during a black hole merger. Close to a black hole merger, the meaning of gravitational radiation is somewhat ambiguous, however farther away from the merger this quantity provides a way to determine what gravitational wave detectors such as <a href="https://www.ligo.caltech.edu/" target="_blank">LIGO</a> will measure.</p>
             </div>
         </div>
         <!--pop-up info page end-->
@@ -163,6 +153,7 @@
             //<!--defining variables from previous HTML objects-->
             var modal = document.getElementById("myModal");
             var infoBtn = document.getElementById("luneLogo");
+            var homeBtn = document.getElementById("homeButton");
             var span = document.getElementsByClassName("close")[0];
             var advControls = document.getElementById("advancedControls");
             var more = document.getElementById("moreButton");
@@ -176,6 +167,12 @@
                 modal.style.display = "none";
             }
             //<!--info button open/close end-->
+            
+            //<!--home button start-->
+            homeBtn.onclick = function(){
+                window.location.href ="../index.html"
+            }
+            //<!--home button end-->
             
             //<!--advanced controls button open/close start-->
             more.onclick = function(){
