@@ -1,22 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-<title>Welcome to Lune</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-</style>
-</head>
-
-<body>
-
-<h1>Hello World!</h1>
-
-<script type="text/javascript">
 function solveTridiagonal (n, a, b, c, x) {
   var i, fac;
 
@@ -49,7 +30,7 @@ function solveTridiagonal (n, a, b, c, x) {
 }
 
 function getScalarFieldID(r, sf,
-  psi, psi4, alpha)
+  psi)
 {
   NR = r.length;
 
@@ -99,38 +80,43 @@ function getScalarFieldID(r, sf,
   // set the metric fields
   for(i=0; i<NR; i++)
     psi[i] = s[i];
-    psi4[i] = Math.pow(s[i], 4);
-    alpha[i] = Math.pow(s[i], -2);
+  //console.log("Returning Phi Hopefully!", n) 
+  //return Phi;
 }
 
-
+var NR = 30000;
 var r = Array(NR),
     sf = Array(NR);
 var psi = Array(NR),
     psi4 = Array(NR),
     alpha = Array(NR);
 
+//Read in r0, phi0, and sigma as arguments (they define the gaussian)
+function makeInitials(phi0=0.4, r0=0.0, sigma=1){
 // coordinates
 // below is for uniform radial spacing,
 // check nrpy code for e.g. sinh spherical. More complicated...
 // maybe ok here to just use more points.
-var NR = 100,
-    rmax = 10.0;
-for(var i=0; i<NR; i++)
-  r[i] = (i+0.5)/NR*rmax;
+    console.log('makeInitials:',phi0)
+    console.log('makeInitials:',r0)
+    console.log('makeInitials:',sigma)
+
+    var NR = 30000,
+        rmax = 12.0;
+    for(var i=0; i<NR; i++)
+      r[i] = (i+0.5)/NR*rmax;
 
 // scalar field profile
-var phi0 = 0.4,
-    r0 = 0.0,
-    sigma = 1.0;
-for(var i=0; i<NR; i++)
-  sf[i] = phi0*Math.exp( -(r[i]-r0)*(r[i]-r0)/sigma/sigma );
+    for(var i=0; i<NR; i++)
+      sf[i] = phi0*Math.exp( -(r[i]-r0)*(r[i]-r0)/sigma/sigma );
 
-getScalarFieldID(r, sf, psi, psi4, alpha);
-
-
-</script>
-
-</body>
-
-</html>
+    getScalarFieldID(r, sf, psi);
+    
+    console.log('Generating Psi4 and Alpha! Test!');
+    for(var i=0; i<NR; i++)
+      psi4[i] = Math.pow(psi[i],4);
+    for(var i=0; i<NR; i++)
+        alpha[i] = Math.pow(psi[i],-2);
+    
+    
+}

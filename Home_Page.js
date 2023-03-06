@@ -1,0 +1,25 @@
+// Javascript file for the Home Page
+
+
+Motivation
+    These browser-based simulations were inspired by the BlackHoles@Home project which aims to create binary black hole, neutron star, and other numerical relativity simulations that can run on consumer-grade desktops. Numerical relativity simulations require an immense amount of memory and computer power; so much power in fact that they usually can only be run on a supercomputer. By using efficient approximation methods, the researchers behind BlackHoles@Home have found ways to dramatically reduce the memory and computing requirements of such simulations, allowing them to be run on a desktop computer!
+    We wanted to take the accessiblity of their project one step further and create browser-based numerical relativity simulations. Our goal was to create novel, but approachable simulations with clear visualizations, intuative interfaces, and information pages. We aimed for our simulations to be easy to use and understandable even for casual learners of general and numerical relativity. That way, anyone, regardless of skill level, would be able to access and use them. Now, instead of a supercomputer, all you need need is a browser and a link!
+        
+Background on Numerical Relativity
+    Numerical Relativity is a field which aims to solve complex problems in general relativity using computer algorithms. General relativity is governed by Einstein's field equations which describe how mass, specifically the distribution of mass, affects the geometry of a 4D spacetime (3 spatial dimensions, one time dimension). In this theory, gravity can be thought of as a dip in spacetime which acts like the side of a bowl, pulling objects towards the center. Think of standing on a trampoline, dropping a marble, and watching it roll towards your feet. These equations are quite complicated and only get more so once parameters are varied, hence the need for computer algorithms to solve them.
+
+Einstein's Field Equations in BSSN and BSSN in Curvilinear
+      Eistein's equations can be written in many different ways that cater to specific general relativistic systems. The standard formalism is the ADM 3+1 formalism. ADM splits the 4D spacetime vectors into a 3D spatial vector and 1D time component, and reformulates Einstein's equations accordingly. The BSSN formalism is a further reformulation of the standard ADM 3+1 equations that aims to improve the performance of numerical implementations, such as when studying the evolution of binary black hole systems. Since these simulations are dealing with a non-flat spacetime, curvilinear coordinates are used as they can describe Euclidean space, but allow coordinate lines to be curved. Choosing this coordinate system helps minimize sampling points, and makes the simulation much more efficent compared to if another coordinate system was used.
+                    
+    One notable aspect of the BSSN equations is that the spatial metric is decomposed into a conformally related spatial metric and an additional conformal factor. Additionally, the extrinsic curvature is broken into its trace and a traceless parts. Conformal decomposition and breaking a metric into its trace and traceless parts are mathematical techniques that make equations easier to use (or in this case evolve) in certain settings. Along with a few other modifications, these techniques allow the BSSN formalism to compute time evolution simulations for far longer than the standard ADM equations would allow.
+
+Method of Lines and Runge-Kutta 4th-Order Method
+    Einstein's equations are sets of non-linear partial differential equations which are very difficult to handle. In order to run the simulation, we need to simplify the equations so that when we plug in our initial data, we get expressions for the functions we want to visualize. This process of simplification is referred to as "solving" Einstein's equations. To solve the BSSN equations we use Method of Lines which is a general strategy to solve time-dependent partial differential equations by breaking them down into a set of ordinary differential equations (ODEs). Ordinary differential equations are much easier to handle, and there are many methods of solving them. Once the method of lines procedure runs, this simulation uses the Runge-Kutta 4th-order (RK4) method to solve the ODEs, which can accurately integrate the functions over time while remaining numerically stable. This process is part of the core loop in the code. Each time we want to progress the simulation forward in time, we run the Method of Lines RK4 algorithm to get the next spatial slice.
+
+Contact Info
+Got any questions or interested in learning more? Check us out on
+    <a href="https://github.com/wucap/NRPyJS" target="_blank"> github </a>.
+For more information on NRPY+ and 
+    <a href="http://astro.phys.wvu.edu/bhathome/" target="_blank"> BlackHoles@Home <img id="BHlogo" src="BH@Hlogo.png" alt=""></a>
+For more information on
+    <a href="https://emscripten.org/index.html" target="_blank"> Emscripten <img id="emscriptenlogo" src="EmscriptenLogo.png" alt=""></a>

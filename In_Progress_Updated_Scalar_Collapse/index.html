@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang=en-us>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Scalar Field Collapse</title>
+
+        <!--various style sheets-->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" type="text/css"
+              href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/css/selectize.css"/>
+        <link rel="stylesheet" href="ScalarFieldCollapse.css">
+    </head>
+    <body>
+        <!--graphing tools-->
+        <script src="https://threejs.org/build/three.min.js"></script>
+        <script src="../OrbitControls.js"></script>
+        <script src="https://unpkg.com/delaunator@3.0.2/delaunator.js"></script>
+        <script src="https://unpkg.com/konva@8/konva.min.js"></script>
+        <!-- https://github.com/mapbox/delaunator -->
+
+        <!--MathJax-->
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.0.1/es5/tex-mml-chtml.js"></script>
+
+        <!--selectize drop-down menu-->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+                integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/js/standalone/selectize.js"></script>
+
+        <!--link to Javascript codes-->
+        <script src="ScalarFieldCollapse.js"></script>
+        <script src="delaunaymesh.js"></script>
+        <script src="cspl.js"></script>
+        
+        <!--generating initial conditions-->
+        <script src="scalar_initial_data.js"></script>
+        <script src="ScalarCollapsePlot.js"></script>
+
+        <!-- simulation control panel start -->
+        <div id="controlPanel">
+            <!--control buttons start-->
+            <div id="controlBar">
+                <button id="runButton" class="buttons" onclick="javascript:runSim();">Run Simulation</button>
+                <button id="stopButton" class="buttons" onclick="javascript:stopSim();" disabled>Stop</button>
+
+                <select id="selectFx" onchange="changeUp();">
+                    <option value="20" selected="selected">&#968;: Scalar Field</option> <!--SFGF-->
+                    <option value="6">α: Lapse</option> <!--ALPHAGF-->
+                    <option value="0">a&#8321;&#8321;: Traceless Part of K&#7522;&#11388;</option> <!--ADD00GF-->
+                    <option value="1">a&#8321;&#8322;: Traceless Part of K&#7522;&#11388;</option> <!--ADD01GF-->
+                    <option value="2">a&#8321;&#8323;: Traceless Part of K&#7522;&#11388;</option> <!--ADD02GF-->
+                    <option value="3">a&#8322;&#8322;: Traceless Part of K&#7522;&#11388;</option> <!--ADD11GF-->
+                    <option value="4">a&#8322;&#8323;: Traceless Part of K&#7522;&#11388;</option> <!--ADD12GF-->
+                    <option value="5">a&#8323;&#8323;: Traceless Part of K&#7522;&#11388;</option> <!--ADD22GF-->
+                    <option value="7">B&#185;: Shift</option> <!--BETU0GF-->
+                    <option value="8">B&#178;: Shift</option> <!--BETU1GF-->
+                    <option value="9">B&#179;: Shift</option> <!--BETU2GF-->
+                    <option id="cf" value="10">e&#8315;&#178;&#7602;: Conformal Factor</option> <!--CFGF-->
+                    <option value="11">h&#8321;&#8321;: Conformal Spatial Metric</option> <!--HDD00GF-->
+                    <option value="12">h&#8321;&#8322;: Conformal Spatial Metric</option> <!--HDD01GF-->
+                    <option value="13">h&#8321;&#8323;: Conformal Spatial Metric</option> <!--HDD02GF-->
+                    <option value="14">h&#8322;&#8322;: Conformal Spatial Metric</option> <!--HDD11GF-->
+                    <option value="15">h&#8322;&#8323;: Conformal Spatial Metric</option> <!--HDD12GF-->
+                    <option value="16">h&#8323;&#8323;: Conformal Spatial Metric</option> <!--HDD22GF-->
+                    <option value="17">λ&#185;: Spatial Metric Varible</option> <!--LAMBDAU0GF-->
+                    <option value="18">λ&#178;: Spatial Metric Varible</option> <!--LAMBDAU1GF-->
+                    <option value="19">λ&#179;: Spatial Metric Varible</option> <!--LAMBDAU2GF-->
+                    <option value="22">K: Trace of K&#7522;&#11388;</option> <!--TRKGF-->
+                    <option value="23">V&#185;: Shift Variable</option> <!--VETU0GF-->
+                    <!-- Currently V2 and V3, commented out below, don't work-->
+                    <!--option value="24">V&#178;: Shift Variable</option> <!--VETU1GF-->
+                    <!--option value="25">V&#179;: Shift Variable</option> <!--VETU2GF-->
+
+                </select>
+                <button id="nextButton" class="buttons" onclick="javascript:nextSlice();" disabled>Step Forward</button>
+                <button id="animateButton" class="buttons" onclick="javascript:animateSim();" disabled>Animate</button>
+                <button id="moreButton" class="buttons">
+                    <i id="icon" class="fa fa-angle-down"></i>
+                </button>
+
+                <!--drop-down advanced control panel start-->
+                <div id="advancedControls">
+                    <label for="res1" id="res">Resolution</label>
+                    <input type="text" id="res1" name="res1" maxlength="2" size="4" value="28">
+                    <label for="axesOnOff">Axes</label>
+                    <input type="checkbox" id="axesOnOff" onchange="axesVisibility();" checked>
+                <!--    <label for="r0">Gaussian Parameters</label>
+                    <input type="text" id="r0" name="r0" size="4" value="0.0">
+                    <input type="text" id="phi0" name="phi0" size="4" value="0.4">
+                    <input type="text" id="sigma" name="sigma" size="4" value="1"> -->
+                    <label for="tfin" id="ltfin">Final Time</label>
+                    <input type="text" id="tfin" name ="tfin" size="4" value="16"> 
+                    <br />
+                    <div id="chartContainer"></div>
+                </div>
+                <!--drop-down advanced control panel end-->
+            </div>
+            <!--control buttons end-->
+
+            <div id="progressBar">
+                <div id="progressDisplay"></div>
+            </div>
+        </div>
+        <!-- simulation control panel end -->
+
+        <!-- info button start-->
+        <div id="luneLogo">
+            i <!-- UTF-8 info character -->
+        </div>
+        <!-- info button end -->
+        
+         <!-- home button start -->
+        <div id="homeButton">
+            <i class="fa fa-home"></i>
+        </div>
+        <!-- home button end -->
+
+        <!--pop-up info page start-->
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+
+                <h1>Welcome to the Scalar Field Simulator!</h1>
+
+                <p>This website simulates the evolution of a massless scalar field using numerical relativity algorithms. This simulation allows the user to set the initial conditions of a massless scalar field and evolve that field over time. Depending on how the initial conditions are set, the field will evolve in different ways (in some cases, it will collapse into a black hole!).
+                </p>
+
+                <h2>What am I Simulating?</h2>
+                <p>The scalar field is simulated by solving Einstein's field equations based on some initial configuration of spacetime, and integrating those equations over time. Einstein's field equations are a concept in general relativity which describe the geometry of a 4D spacetime. There are many different functions within those equations we can graph. To visualize the field in 3D, we take two spatial dimensions \((x,y)\) and let a surface height \(z\) be one of the many functions our program records during the simulation. Each static image is called a "spatial slice" and represents what a given function looks like at any particular point along a 2D field at one moment in time. In 4D spacetime, these spatial slices are all stacked on top of one another in the 3rd spatial dimension to compose our 3D world, but in order to create a 3D animation, we only consider 2 spatial dimensions. By playing these spatial slices back to back, this simulation shows how a massless scalar field evolves over time.</p> 
+                 <p>The NRPY+ code simulates the evolution of a massless scalar field by creating a massless scalar field using the initial data set in the advanced controls, and integrating it forward in time using the Method of Lines and RK4 time-stepping algorithm. These calculations are done using a version of the BSSN 3+1 formalism of Einstein's field equations (see <a href=https://lune.wustl.edu/kbh#NRBackground>Background Information on Numerical Relativity</a> for a more indepth explaination). The simulation records the evolution of the evolution of the scalar field and 24 different functions solved for within the BSSN equations. For each function, the program displays a 2D spatial slice and shows its evolution over a set number of time-steps.</p>
+
+                <h2>Running the Simulator</h2>
+                <p>When you first open the page click "Run Simulation" to run the simulation. At the default resolution the simulation will take around _________ to complete. You can view its progress in the progress bar below the control panel. After the program has run once you will be able to walk through the visualization. Click "Step Forward" to move forward one time-step, or "Animate" to see the whole simulation start to finish. Click the arrow for advanced controls to set resolution, final time, and initial conditions. To return to the home page, click the house icon in the lower right hand corner of the screen.
+                <h3>Advanced Controls</h3>
+                <p>Resolution: Sets how many points are sampled in the radial spatial dimension. Once a new resolution has been set, click "Run Simulation" to see how the simulation is effected (note that changing the resolution will impact the time it takes for the simulation to complete).
+                <br><br> Final Time: Sets how long the simulation runs (i.e. how many timesteps will be taken). Once a new \(T_{final}\) has been set, click "Run Simulation" to see how the simulation is effected (note that changing the number of timesteps will impact the time it takes for the simulation to complete).
+                <br><br> Initial Conditions: ______</p>
+                
+                 <h2 id="functions">The Scalar Field, Lapse Function, Conformal Factor, and More</h2>
+                <p>The simulation records the evolution of 24 different functions within the BSSN equations. Here we will highlight a few of the typical BSSN functions. Note that this description follows Einstein notation, so spatial dimensions are denoted using an index \(i\), which can be any of three general coordinates: \(r, \theta, \phi\).
+                <br><br>NOTE: The simulation used a rescaled version of the BSSN equations to avoid issues with coordinate singularities that cause problems in calculations. These functions are closely related to the standard BSSN ones. For brevity's sake, on this page we will only discuss the typical BSSN functions. If you are interested in learning more about the specific functions used in the simulation see the <a href="https://nrpyplus.net/nrpytutorial.html">NRPY+ Tutorial</a> section on BSSN in Curvilinear Coordinates.</p>
+                
+                <h3>The Scalar Field: \(\psi\)</h3>
+                By definition, a scalar field is one where each point on the field is associated with a scalar value. The actual scalar values aren't really meaningful, as they doesn’t correspond with any sort of matter or energy field one might be familiar with. Rather it's the gradients which causes the field to collapse or not. Steeper gradients (high rates of change of field values in time) mean more kinetic energy is associated with that point. If there is enough energy distributd in the field in such a way that the field can self gravitate, the field will collapse into a black hole. As of now, the only known physical scalar field is the Higgs-Boson field.
+                
+                <h3>Lapse Function: \(\alpha\)</h3>
+                <p>The lapse function describes how fast time is passing at each point. At each point on a spatial slice, time may be progressing slower or faster (think Interstellar where time on Miller's planet runs slower than on the space shuttle). In general relativity, time is just another dimension. Therefore, just like how spatial coordinates can be shifted, moving mass around will change how fast time is flowing between time slices. As the black holes move, a point's proper time (time measured at that point) will become "slower" or "faster" as it gets closer to or farther from the black holes.</p>
+                
+                <h3>Shift Function: \(\beta^i\)</h3>
+                <p>In the theory of general relativity mass warps spacetime. Therefore, moving mass around will change the geometry of spacetime. This means coordinate points near some mass can be shifted in some way compared to the same points if there were no mass nearby. When the black holes collide, the coordinates near those moving masses will shift around depending on how the mass is moving nearby. The shift function describes how a point's position will change in each spatial dimension at each point in time. In this simulation, the variable \(B^i \sim beta^i\).
+                <br><br>You may notice that \(\beta^\phi\) does not change throughout the simulation. This is because the system is symmetric in the \(\phi\) direction. \(\beta^\phi\) depends on this dimension, so when graphed over the 2D slice it's 0 at all points and times.</p>
+
+                <h3>Conformal Factor: \(e^{-2\phi}\)</h3>
+                <p>The conformal factor is something unique to the BSSN formulation of Einstein's equations. It describes how much the spacetime has expanded or contracted. Numerically, and more technically, it relates a conformally transformed spatial metric to the regular spatial metric. In the BSSN formulation, different definitions of conformal factors can be used; in this simulation, \(e^{-2\phi}\) was used.</p>
+
+                <h3>Trace of Extrinsic Curvature: \(K\)</h3>
+                <p>The extrinsic curvature (\(K_{ij}\)) describes how quickly a region of spacetime is expanding or contracting, and its trace (\(K\)) is the sum of those rates in all dimensions. More formally, it describes how a vector normal to a time-slice deviates from normal when moved along parallel lines on a time slice (parallel transportation). If the vector shifts at all from normal, there exists some extrinsic curvature, and the trace is the total change in the normal vector at each point on a spatial slice. The functions \(a_{11}\), \(a_{12}\), etc. are all part of the tensor \(a_{ij}\) which is roughly equal to the function you get when you remove the trace from the extrinsic curvature tensor.</p>
+            </div>
+        </div>
+        <!--pop-up info page end-->
+
+        <!--javascript section start-->
+        <script type="text/javascript">
+            var count = 0;
+
+            //<!--defining variables from previous HTML objects-->
+            var modal = document.getElementById("myModal");
+            var infoBtn = document.getElementById("luneLogo");
+            var homeBtn = document.getElementById("homeButton");
+            var span = document.getElementsByClassName("close")[0];
+            var advControls = document.getElementById("advancedControls");
+            var more = document.getElementById("moreButton");
+
+            //<!--info button open/close start-->
+            infoBtn.onclick = function() {
+                modal.style.display = "block";
+            }
+
+            span.onclick = function() {
+                modal.style.display = "none";
+            }
+            //<!--info button open/close end-->
+            
+            //<!--home button start-->
+            homeBtn.onclick = function(){
+                window.location.href ="../index.html"
+            }
+            //<!--home button end-->
+
+            //<!--advanced controls button open/close start-->
+            more.onclick = function(){
+                if(count%2==0){
+                    advControls.style.display = "block";
+                    document.getElementById("icon").className="fa fa-angle-up";
+                } else {
+                    document.getElementById("icon").className="fa fa-angle-down";
+                    advControls.style.display = "none";
+                }
+                count++;
+            }
+            //<!--advanced controls button open/close end-->
+
+            //<!--drop-down selectize start-->
+            $("#selectFx").selectize({
+                persist: false,
+
+                render: {
+                    //<!--creates display for selected function-->
+                    item: function (item, escape) {
+                        var text = item.text;
+                        var colon_location = text.search(":");
+                        var description = text.slice(colon_location+1);
+                        var variable_name = text.slice(0, colon_location);
+
+                        return "<div>" + escape(variable_name) +
+                            "<span style='font-size: 11px; opacity: 0.6; margin: 3px;'>" + escape(description) + "</span>"
+                            + "</div>";
+                    },
+
+                    //<!--creates display for drop-down options-->
+                    option: function (item, escape) {
+                        var text = item.text;
+                        var colon_location = text.search(":");
+                        var description = text.slice(colon_location+1);
+                        var variable_name = text.slice(0, colon_location);
+
+                        return "<div>"
+                            + "<span style='font-size: 14px; margin: 3px;'>" + escape(variable_name) + "</span>"
+                            + "<span style='display:block; font-size: 11px; opacity: 0.6; margin: 3px;'>"
+                            + escape(description) + "</span>" + "</div>";
+                    },
+                },
+            });
+            //<!--drop-down selectize end-->
+
+            //<!--renders visualization canvas-->
+            renderCanvas(document.body);
+
+            //<!-- Begin code for chart to manipulate initial data -->
+            var spl = new CSPL("chartContainer", 10);
+            
+       </script>
+       <!--javascript section end-->
+
+    </body>
+<html>
