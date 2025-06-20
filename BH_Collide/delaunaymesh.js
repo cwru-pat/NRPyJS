@@ -79,7 +79,6 @@ const coordAxes = new THREE.AxesHelper( 5 );
 const red = new THREE.Color("#ff0000");
 const blue = new THREE.Color("#0000FF" );
 const purple = new THREE.Color("#800080");
-coordAxes.setColors(red, blue, purple);
 
 scene.add(coordAxes);
 scene.add(mesh1);
